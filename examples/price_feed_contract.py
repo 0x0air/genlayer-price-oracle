@@ -5,30 +5,31 @@ import json
 
 
 class PriceFeedContract(gl.Contract):
-    """Cryptocurrency price feed from CoinGecko."""
-
     last_price: str
-    last_update: u256
 
     def __init__(self):
         self.last_price = "No data"
-        self.last_update = u256(0)
 
     @gl.public.view
     def show_price(self) -> str:
         return self.last_price
 
     @gl.public.write
-    def fetch_price(self, coin_id: str = "bitcoin", vs_currency: str = "usd") -> str:
-        """Fetch live price from CoinGecko."""
-        url = "https://api.coingecko.com/api/v3/simple/price?ids=" + coin_id + "&vs_currencies=" + vs_currency
-        r = gl.nondet.web.get(url)
-        if r.status_code != 200:
-            return "HTTP Error: " + str(r.status_code)
-        data = json.loads(r.body.decode("utf-8"))
-        if coin_id not in data:
-            return "Coin not found: " + coin_id
-        price = data[coin_id][vs_currency]
-        self.last_price = coin_id + ": " + str(price) + " " + vs_currency
-        self.last_update = u256(__import__("time").time())
-        return self.last_price
+    def fetch_price(self) -> str:
+        def fetch_from_coingecko() -> str:
+            url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+            r = gl.nondet.web.get(url)
+            if r.status_code != 200:
+                raise gl.UserError("HTTP " + str(r.status_code))
+            return r.body.decode("utf-8")
+
+        try:
+            raw = gl.eq_principle.strict_eq(fetch_from_coingecko)
+            data = json.loads(raw)
+            price = data["bitcoin"]["usd"]
+            self.last_price = "bitcoin: " + str(price) + " usd"
+            return self.last_price
+        except gl.UserError as e:
+            return "Error: " + e.message
+        except Exception as e:
+            return "Error: " + str(e)
