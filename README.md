@@ -1,4 +1,4 @@
-﻿# GenLayer Price Oracle — CoinGecko Integration
+# GenLayer Price Oracle --- CoinGecko Integration
 
 A Python library + Intelligent Contracts for fetching real-time cryptocurrency prices from CoinGecko on GenLayer. No oracles. No intermediaries. Just `gl.nondet.web.get()` and CoinGecko public API.
 
@@ -8,7 +8,7 @@ A Python library + Intelligent Contracts for fetching real-time cryptocurrency p
 
 Two parts that work together:
 
-**`src/genlayer_integrations/`** — reusable Python library, useful for testing the CoinGecko API locally:
+**`src/genlayer_integrations/`** --- reusable Python library, useful for testing the CoinGecko API locally:
 
 ```python
 from genlayer_integrations import CoinGeckoPriceFeed
@@ -18,7 +18,7 @@ btc = feed.get_price("bitcoin", "usd")
 print(f"BTC: ${btc}")
 ```
 
-**`examples/`** — ready-to-deploy Intelligent Contracts, written in proper genlayer format. These are what you actually put on-chain.
+**`examples/price_feed_contract.py`** --- ready-to-deploy Intelligent Contract that actually runs on-chain.
 
 ---
 
@@ -26,67 +26,38 @@ print(f"BTC: ${btc}")
 
 ### Prerequisites
 
-- [GenLayer CLI](https://docs.genlayer.com/api-references/genlayer-cli) installed & `genlayer init` done
-- An account with testnet funds (`genlayer account create` → faucet at https://testnet-faucet.genlayer.foundation)
-- Network set to Bradbury (`genlayer network set bradbury`)
+- [GenLayer CLI](https://docs.genlayer.com/api-references/genlayer-cli) installed and `genlayer init` done
+- An account with testnet funds (`genlayer account create` -> faucet at https://testnet-faucet.genlayer.foundation)
+- Network set to Studionet (web access enabled):
 
-### Price Feed Contract
+```bash
+genlayer network set studionet
+```
+
+### Deploy
 
 ```bash
 genlayer deploy --contract examples/price_feed_contract.py
 
-# Read — no gas
+# Check initial state
 genlayer call <CONTRACT> show_price
+# -> No data
 
-# Write — fetches live price from CoinGecko, stores it on-chain
-genlayer write <CONTRACT> fetch_price bitcoin usd
+# Fetch Bitcoin price from CoinGecko
+genlayer write <CONTRACT> fetch_price
 
-# Multi-coin
-genlayer write <CONTRACT> fetch_multi_prices "bitcoin,ethereum,solana"
-
-# History
-genlayer call <CONTRACT> show_history 5
+# Read the stored price
+genlayer call <CONTRACT> show_price
+# -> bitcoin: 62623 usd
 ```
 
-### Market Overview Contract
+### Notes
 
-```bash
-genlayer deploy --contract examples/market_overview_contract.py
-genlayer write <CONTRACT> fetch_market_overview
-genlayer call <CONTRACT> get_summary
-```
-
----
-
-## Quick test flow
-
-```bash
-# Deploy
-genlayer deploy --contract examples/price_feed_contract.py
-# → Contract deployed at: 0x1234...5678
-
-# Fetch BTC price
-genlayer write 0x1234...5678 fetch_price bitcoin usd
-# → ✓ Fetched bitcoin: 65432.10 usd
-
-# Check stored state
-genlayer call 0x1234...5678 show_price
-# → Coin: bitcoin
-#   Price: 65432.10 usd
-#   Updated: timestamp XXXXXX
-
-# Multi-price
-genlayer write 0x1234...5678 fetch_multi_prices "bitcoin,ethereum"
-# → === Multi-Price Fetch (USD) ===
-#     bitcoin: 65432.10
-#     ethereum: 3456.78
-
-# Market overview
-genlayer deploy --contract examples/market_overview_contract.py
-genlayer write <ADDRESS> fetch_market_overview
-genlayer call <ADDRESS> get_summary
-# → Market cap, BTC dominance, trending coins
-```
+- `genlayer deploy` uses `--contract` flag, not positional argument
+- For `write` with simple string args, pass values directly: `--args bitcoin usd` (not JSON array)
+- For `u256` / integer args, pass bare value: `--args 100` (not `[100]`)
+- Web access (`gl.nondet.web.get()`) only works on Studionet. Asimov and Bradbury currently forbid external requests.
+- The contract uses `gl.eq_principle.strict_eq()` so all validators agree on the result.
 
 ---
 
@@ -94,18 +65,17 @@ genlayer call <ADDRESS> get_summary
 
 ```
 genlayer-price-oracle/
-├── src/genlayer_integrations/
-│   ├── __init__.py
-│   ├── base.py
-│   ├── coingecko.py
-│   └── exceptions.py
-├── examples/
-│   ├── price_feed_contract.py
-│   └── market_overview_contract.py
-├── tests/
-│   └── test_coingecko.py
-├── setup.py
-└── README.md
++-- src/genlayer_integrations/
+|   +-- __init__.py
+|   +-- base.py
+|   +-- coingecko.py
+|   +-- exceptions.py
++-- examples/
+|   +-- price_feed_contract.py
++-- tests/
+|   +-- test_coingecko.py
++-- setup.py
++-- README.md
 ```
 
 ---
@@ -117,7 +87,7 @@ genlayer-price-oracle/
 | Method | What it does |
 |--------|-------------|
 | `get_simple_price(ids, vs_currencies)` | Spot price for one or more coins |
-| `get_coin_data(coin_id)` | Full coin detail — market data, description, links |
+| `get_coin_data(coin_id)` | Full coin detail --- market data, description, links |
 | `get_coin_market_chart(coin_id, days)` | Historical price series for charts |
 | `get_top_coins(per_page)` | Top N by market cap |
 | `get_trending()` | Trending on CoinGecko right now |
@@ -160,7 +130,7 @@ pip install -e .
 python -m pytest tests/ -v
 ```
 
-All tests use mocked HTTP — no network needed.
+All tests use mocked HTTP --- no network needed.
 
 ---
 
