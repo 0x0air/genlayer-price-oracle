@@ -24,21 +24,12 @@ class MarketOverviewContract(gl.Contract):
 
         try:
             raw = gl.eq_principle.strict_eq(fetch_global)
-            data = json.loads(raw)['data']
-
-            mcap = data.get('total_market_cap', {}).get('usd', 0)
-            volume = data.get('total_volume', {}).get('usd', 0)
-            btc_dom = data.get('market_cap_percentage', {}).get('btc', 0)
-            coins = data.get('active_cryptocurrencies', 0)
-
-            self.summary = (
-                f"Total M Capture: ${mcap:,.0f}\n"
-                f"24h Volume: ${volume:,.0f}\n"
-                f"BTC Dominance: {btc_dom:.1f}%\n"
-                f"Active Coins: {coins}"
-            )
+            data = json.loads(raw)
+            mcap = str(data.get('total_market_cap', {}).get('usd', 'N/A'))
+            volume = str(data.get('total_volume', {}).get('usd', 'N/A'))
+            btc_dom = str(data.get('market_cap_percentage', {}).get('btc', 'N/A'))
+            coins = str(data.get('active_cryptocurrencies', 'N/A'))
+            self.summary = "Total MCap: " + mcap + " | Vol: " + volume + " | BTC: " + btc_dom + "% | Coins: " + coins
             return self.summary
-        except gl.UserError as e:
-            return "Error: " + e.message
         except Exception as e:
             return "Error: " + str(e)
