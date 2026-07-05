@@ -33,7 +33,7 @@ print(f"BTC: ${btc}")
 ### Price Feed Contract
 
 ```bash
-genlayer deploy examples/price_feed_contract.py
+genlayer deploy --contract examples/price_feed_contract.py
 
 # Read — no gas
 genlayer call <CONTRACT> show_price
@@ -51,7 +51,7 @@ genlayer call <CONTRACT> show_history 5
 ### Market Overview Contract
 
 ```bash
-genlayer deploy examples/market_overview_contract.py
+genlayer deploy --contract examples/market_overview_contract.py
 genlayer write <CONTRACT> fetch_market_overview
 genlayer call <CONTRACT> get_summary
 ```
@@ -62,7 +62,7 @@ genlayer call <CONTRACT> get_summary
 
 ```bash
 # Deploy
-genlayer deploy examples/price_feed_contract.py
+genlayer deploy --contract examples/price_feed_contract.py
 # → Contract deployed at: 0x1234...5678
 
 # Fetch BTC price
@@ -82,7 +82,7 @@ genlayer write 0x1234...5678 fetch_multi_prices "bitcoin,ethereum"
 #     ethereum: 3456.78
 
 # Market overview
-genlayer deploy examples/market_overview_contract.py
+genlayer deploy --contract examples/market_overview_contract.py
 genlayer write <ADDRESS> fetch_market_overview
 genlayer call <ADDRESS> get_summary
 # → Market cap, BTC dominance, trending coins
