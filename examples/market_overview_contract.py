@@ -18,19 +18,13 @@ class MarketOverviewContract(gl.Contract):
 
     @gl.public.write
     def fetch_market_overview(self) -> str:
-        def fetch_global() -> str:
-            r = gl.nondet.web.get("https://api.coingecko.com/api/v3/global")
-            return r.body.decode("utf-8")
-
-        try:
-            raw = gl.eq_principle.strict_eq(fetch_global)
-            d = json.loads(raw)
-            data = d['data']
-            mcap = str(data['total_market_cap']['usd'])
-            volume = str(data['total_volume']['usd'])
-            btc_dom = str(data['market_cap_percentage']['btc'])
-            coins = str(data['active_cryptocurrencies'])
-            self.summary = "MCap: " + mcap + " | Vol: " + volume + " | BTC: " + btc_dom + "% | Coins: " + coins
-            return self.summary
-        except Exception as e:
-            return "Error: " + str(e)
+        r = gl.nondet.web.get("https://api.coingecko.com/api/v3/global")
+        raw = r.body.decode("utf-8")
+        d = json.loads(raw)
+        data = d['data']
+        mcap = str(data['total_market_cap']['usd'])
+        volume = str(data['total_volume']['usd'])
+        btc_dom = str(data['market_cap_percentage']['btc'])
+        coins = str(data['active_cryptocurrencies'])
+        self.summary = "MCap: " + mcap + " | Vol: " + volume + " | BTC: " + btc_dom + "% | Coins: " + coins
+        return self.summary
