@@ -1,4 +1,4 @@
-﻿"""
+"""
 CoinGecko API integration for GenLayer Intelligent Contracts.
 
 Provides a clean interface for Intelligent Contracts to fetch

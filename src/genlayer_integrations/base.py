@@ -1,4 +1,4 @@
-﻿"""
+"""
 Base integration module for GenLayer Intelligent Contract external API integrations.
 
 This module provides the BaseIntegration class that all GenLayer external

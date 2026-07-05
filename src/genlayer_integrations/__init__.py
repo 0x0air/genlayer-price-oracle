@@ -1,4 +1,4 @@
-﻿from .coingecko import CoinGeckoClient, CoinGeckoPriceFeed
+from .coingecko import CoinGeckoClient, CoinGeckoPriceFeed
 from .base import BaseIntegration
 from .exceptions import (
     IntegrationError,

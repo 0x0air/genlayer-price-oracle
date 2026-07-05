@@ -1,4 +1,4 @@
-﻿"""
+"""
 Tests for the CoinGecko integration library.
 
 Run with:

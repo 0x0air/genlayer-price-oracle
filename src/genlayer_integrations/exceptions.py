@@ -1,4 +1,4 @@
-﻿class IntegrationError(Exception):
+class IntegrationError(Exception):
     """Base exception for all integration-related errors."""
     pass
 
