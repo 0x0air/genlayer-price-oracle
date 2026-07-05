@@ -19,8 +19,6 @@ class PriceFeedContract(gl.Contract):
         def fetch_from_coingecko() -> str:
             url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
             r = gl.nondet.web.get(url)
-            if r.status_code != 200:
-                raise gl.UserError("HTTP " + str(r.status_code))
             return r.body.decode("utf-8")
 
         try:
