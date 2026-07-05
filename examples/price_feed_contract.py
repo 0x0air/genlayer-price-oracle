@@ -15,19 +15,17 @@ class PriceFeedContract(gl.Contract):
         return self.last_price
 
     @gl.public.write
-    def fetch_price(self) -> str:
+    def fetch_price(self, coin_id: str = "bitcoin", vs_currency: str = "usd") -> str:
         def fetch_from_coingecko() -> str:
-            url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+            url = "https://api.coingecko.com/api/v3/simple/price?ids=" + coin_id + "&vs_currencies=" + vs_currency
             r = gl.nondet.web.get(url)
             return r.body.decode("utf-8")
 
         try:
             raw = gl.eq_principle.strict_eq(fetch_from_coingecko)
             data = json.loads(raw)
-            price = data["bitcoin"]["usd"]
-            self.last_price = "bitcoin: " + str(price) + " usd"
+            price = str(data[coin_id][vs_currency])
+            self.last_price = coin_id + ": " + price + " " + vs_currency
             return self.last_price
-        except gl.UserError as e:
-            return "Error: " + e.message
         except Exception as e:
             return "Error: " + str(e)
