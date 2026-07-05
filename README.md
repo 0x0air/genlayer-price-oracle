@@ -1,145 +1,143 @@
 ﻿# GenLayer Price Oracle — CoinGecko Integration
 
-A **third-party integration library** for [GenLayer](https://genlayer.com) Intelligent Contracts, providing a clean interface to fetch real-time cryptocurrency price data from **CoinGecko** directly on-chain — no oracles, no intermediaries.
-
-> Built for the **"3rd party integrations"** contribution type on the [GenLayer Portal](https://portal.genlayer.foundation/validators/contributions).
+A Python library + Intelligent Contracts for fetching real-time cryptocurrency prices from CoinGecko on GenLayer. No oracles. No intermediaries. Just `gl.nondet.web.get()` and CoinGecko public API.
 
 ---
 
-## 📋 How It Works
+## What's inside
 
-This project contains two parts:
+Two parts that work together:
 
-### 1. Python Library (`src/genlayer_integrations/`)
-
-A reusable Python library for testing CoinGecko API interactions locally:
+**`src/genlayer_integrations/`** — reusable Python library, useful for testing the CoinGecko API locally:
 
 ```python
 from genlayer_integrations import CoinGeckoPriceFeed
 
 feed = CoinGeckoPriceFeed()
-btc_price = feed.get_price("bitcoin", "usd")
-print(f"BTC: ${btc_price}")
+btc = feed.get_price("bitcoin", "usd")
+print(f"BTC: ${btc}")
 ```
 
-### 2. GenLayer Intelligent Contracts (`examples/`)
-
-Ready-to-deploy Intelligent Contracts that use `gl.nondet.web.get()` to fetch CoinGecko data on the GenLayer testnet.
+**`examples/`** — ready-to-deploy Intelligent Contracts, written in proper genlayer format. These are what you actually put on-chain.
 
 ---
 
-## 🚀 Deploy to GenLayer Testnet
+## Deploy to Testnet
 
 ### Prerequisites
 
-- [GenLayer CLI](https://docs.genlayer.com/api-references/genlayer-cli) installed
-- An account with testnet funds (`genlayer account create`)
+- [GenLayer CLI](https://docs.genlayer.com/api-references/genlayer-cli) installed & `genlayer init` done
+- An account with testnet funds (`genlayer account create` → faucet at https://testnet-faucet.genlayer.foundation)
+- Network set to Bradbury (`genlayer network set bradbury`)
 
-### Deploy the Price Feed Contract
+### Price Feed Contract
 
 ```bash
-# 1. Deploy
-genlayer contract deploy examples/price_feed_contract.py
+genlayer deploy examples/price_feed_contract.py
 
-# 2. Fetch BTC price
-genlayer contract call <CONTRACT_ADDRESS> fetch_price bitcoin usd
+# Read — no gas
+genlayer call <CONTRACT> show_price
 
-# 3. View stored price
-genlayer contract call <CONTRACT_ADDRESS> show_price
+# Write — fetches live price from CoinGecko, stores it on-chain
+genlayer write <CONTRACT> fetch_price bitcoin usd
 
-# 4. Fetch multiple prices
-genlayer contract call <CONTRACT_ADDRESS> fetch_multi_prices "bitcoin,ethereum,solana"
+# Multi-coin
+genlayer write <CONTRACT> fetch_multi_prices "bitcoin,ethereum,solana"
+
+# History
+genlayer call <CONTRACT> show_history 5
 ```
 
-### Deploy the Market Overview Contract
+### Market Overview Contract
 
 ```bash
-genlayer contract deploy examples/market_overview_contract.py
-genlayer contract call <ADDRESS> fetch_market_overview
-genlayer contract call <ADDRESS> get_summary
+genlayer deploy examples/market_overview_contract.py
+genlayer write <CONTRACT> fetch_market_overview
+genlayer call <CONTRACT> get_summary
 ```
 
 ---
 
-## 🧪 Testing on Testnet
-
-To test and validate that the contract works correctly on the GenLayer testnet:
+## Quick test flow
 
 ```bash
 # Deploy
-genlayer contract deploy examples/price_feed_contract.py
-# Example output:
-# Contract deployed at: 0x1234...5678
-# Transaction hash: 0xabcd...ef01
+genlayer deploy examples/price_feed_contract.py
+# → Contract deployed at: 0x1234...5678
 
-# Test 1: Fetch Bitcoin price
-genlayer contract call 0x1234...5678 fetch_price bitcoin usd
-# Expected: ✓ Fetched bitcoin: 65432.10 usd
+# Fetch BTC price
+genlayer write 0x1234...5678 fetch_price bitcoin usd
+# → ✓ Fetched bitcoin: 65432.10 usd
 
-# Test 2: Verify stored price
-genlayer contract call 0x1234...5678 show_price
-# Expected: Coin: bitcoin\nPrice: 65432.10 usd\nUpdated: timestamp XXXXXX
+# Check stored state
+genlayer call 0x1234...5678 show_price
+# → Coin: bitcoin
+#   Price: 65432.10 usd
+#   Updated: timestamp XXXXXX
 
-# Test 3: Multi-price fetch
-genlayer contract call 0x1234...5678 fetch_multi_prices "bitcoin,ethereum"
-# Expected: === Multi-Price Fetch (USD) ===\n  bitcoin: XXXXX\n  ethereum: XXXX
+# Multi-price
+genlayer write 0x1234...5678 fetch_multi_prices "bitcoin,ethereum"
+# → === Multi-Price Fetch (USD) ===
+#     bitcoin: 65432.10
+#     ethereum: 3456.78
 
-# Test 4: Check price history
-genlayer contract call 0x1234...5678 show_history 5
-
-# Test 5: Market overview
-genlayer contract deploy examples/market_overview_contract.py
-genlayer contract call <ADDRESS> fetch_market_overview
-genlayer contract call <ADDRESS> get_summary
-# Expected: Global Market Cap, BTC Dominance, Trending coins
+# Market overview
+genlayer deploy examples/market_overview_contract.py
+genlayer write <ADDRESS> fetch_market_overview
+genlayer call <ADDRESS> get_summary
+# → Market cap, BTC dominance, trending coins
 ```
 
 ---
 
-## 📁 Project Structure
+## Project layout
 
 ```
 genlayer-price-oracle/
 ├── src/genlayer_integrations/
-│   ├── __init__.py          # Public API exports
-│   ├── base.py              # Base HTTP client
-│   ├── coingecko.py         # CoinGecko wrapper + PriceFeed
-│   └── exceptions.py        # Custom exceptions
+│   ├── __init__.py
+│   ├── base.py
+│   ├── coingecko.py
+│   └── exceptions.py
 ├── examples/
-│   ├── price_feed_contract.py       # Single/multi price fetch contract
-│   └── market_overview_contract.py  # Global market stats + trending
+│   ├── price_feed_contract.py
+│   └── market_overview_contract.py
 ├── tests/
-│   └── test_coingecko.py    # Unit tests
+│   └── test_coingecko.py
 ├── setup.py
 └── README.md
 ```
 
-## 📡 API Reference (Python Library)
+---
+
+## API reference
 
 ### CoinGeckoClient
 
-| Method | Description |
+| Method | What it does |
 |--------|-------------|
-| `get_simple_price(ids, vs_currencies)` | Current price of any coin |
-| `get_coin_data(coin_id)` | Full coin data (market, description) |
-| `get_coin_market_chart(coin_id, days)` | Historical price data |
-| `get_top_coins(per_page)` | Top N coins by market cap |
-| `get_trending()` | Trending coins |
-| `get_global_data()` | Global market stats |
-| `get_prices_batch(coin_ids)` | Batch price fetch |
+| `get_simple_price(ids, vs_currencies)` | Spot price for one or more coins |
+| `get_coin_data(coin_id)` | Full coin detail — market data, description, links |
+| `get_coin_market_chart(coin_id, days)` | Historical price series for charts |
+| `get_top_coins(per_page)` | Top N by market cap |
+| `get_trending()` | Trending on CoinGecko right now |
+| `get_global_data()` | Total market cap, BTC dominance, volume |
+| `get_prices_batch(coin_ids)` | Simplified multi-price lookup |
 
 ### CoinGeckoPriceFeed
 
-| Method | Description |
+| Method | What it does |
 |--------|-------------|
-| `get_price(coin_id, vs_currency)` | Single price lookup |
-| `get_prices(coin_ids, vs_currency)` | Multi-coin lookup |
-| `get_portfolio_value(holdings, vs_currency)` | Portfolio valuation |
-| `get_price_with_market_context(coin_id)` | Price + market data for LLM |
+| `get_price(coin_id, vs_currency)` | Single price |
+| `get_prices(coin_ids, vs_currency)` | Multi-coin |
+| `get_portfolio_value(holdings, vs_currency)` | Value a wallet |
+| `get_price_with_market_context(coin_id)` | Enriched snapshot for LLM prompts |
 
-## 🔌 Extending
+---
 
-To add other API integrations (weather, social, AI), create a new module:
+## Adding other APIs
+
+The base class makes it easy to wrap other REST APIs:
 
 ```python
 from genlayer_integrations.base import BaseIntegration
@@ -153,13 +151,19 @@ class OpenWeatherMap(BaseIntegration):
         })
 ```
 
-## 🧪 Running Tests
+---
+
+## Tests
 
 ```bash
 pip install -e .
 python -m pytest tests/ -v
 ```
 
-## 📄 License
+All tests use mocked HTTP — no network needed.
+
+---
+
+## License
 
 MIT
