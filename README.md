@@ -36,7 +36,7 @@ genlayer call <CONTRACT> show_price
 <img width="2506" height="1514" alt="5f0107a5-46d6-427f-a38b-19cec6584131" src="https://github.com/user-attachments/assets/24026b50-ebff-4845-ad94-55bb982fc112" />
 
 
-### Coin IDs
+### Coin/API ID
 
 Use any CoinGecko coin slug. The slug is the last part of the coin page URL:
 
@@ -45,14 +45,16 @@ Use any CoinGecko coin slug. The slug is the last part of the coin page URL:
 | Bitcoin | coingecko.com/en/coins/bitcoin | `bitcoin` |
 | Ethereum | coingecko.com/en/coins/ethereum | `ethereum` |
 | Solana | coingecko.com/en/coins/solana | `solana` |
-| Pharos | coingecko.com/en/coins/pharos | `pharos` (not `pharos-network`) |
 
 Check the API directly to confirm:
 ```
 https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd
 ```
+<img width="2520" height="1386" alt="cc587752-ac91-4503-9cba-3d587ed19293" src="https://github.com/user-attachments/assets/40625132-e284-4700-ac22-adcee9b37947" />
+
 
 ---
+
 
 ## Error handling
 
@@ -65,7 +67,6 @@ The contract retries up to 5 times on each `write` to handle API hiccups. Possib
 | `API error (429): ...` | Rate limited -- wait a moment and retry |
 | `Coin ID "xxx" not found in response` | Invalid slug or API returned unexpected data |
 
-CoinGecko free tier has rate limits (~10--30 req/min). If you hit 429 errors, slow down between writes or reduce retries in the contract.
 
 ---
 
