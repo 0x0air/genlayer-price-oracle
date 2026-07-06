@@ -33,8 +33,6 @@ genlayer write <CONTRACT> fetch_price --args solana usd
 genlayer call <CONTRACT> show_price
 # -> solana: 81 usd
 ```
-<img width="2506" height="1514" alt="5f0107a5-46d6-427f-a38b-19cec6584131" src="https://github.com/user-attachments/assets/24026b50-ebff-4845-ad94-55bb982fc112" />
-
 
 ### Coin/API ID
 
@@ -50,11 +48,8 @@ Check the API directly to confirm:
 ```
 https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd
 ```
-<img width="2520" height="1386" alt="cc587752-ac91-4503-9cba-3d587ed19293" src="https://github.com/user-attachments/assets/40625132-e284-4700-ac22-adcee9b37947" />
-
 
 ---
-
 
 ## Error handling
 
@@ -67,7 +62,6 @@ The contract retries up to 5 times on each `write` to handle API hiccups. Possib
 | `API error (429): ...` | Rate limited -- wait a moment and retry |
 | `Coin ID "xxx" not found in response` | Invalid slug or API returned unexpected data |
 
-
 ---
 
 ## Contract reference
@@ -76,8 +70,8 @@ The contract retries up to 5 times on each `write` to handle API hiccups. Possib
 
 Simple single-price feed. Two methods:
 
-- `show_price()` → returns the last stored price string
-- `fetch_price(coin_id, vs_currency)` → fetches from CoinGecko and stores it
+- `show_price()` 鈫?returns the last stored price string
+- `fetch_price(coin_id, vs_currency)` 鈫?fetches from CoinGecko and stores it
 
 ```python
 @gl.public.write
@@ -91,8 +85,7 @@ def fetch_price(self, coin_id: str = "bitcoin", vs_currency: str = "usd") -> str
 
 ### `market_overview_contract.py`
 
-Fetches top coins by market cap and computes a market snapshot in one call.
-Returns total market cap, 24h volume, and individual coin prices sorted by market cap (largest first).
+Fetches top coins by market cap and computes a market snapshot in one call. Returns total market cap, 24h volume, and individual coin prices sorted by market cap (largest first).
 
 ```bash
 genlayer deploy --contract examples/market_overview_contract.py
@@ -109,3 +102,43 @@ genlayer call <CONTRACT> get_summary
 The contract queries 10 major coins (bitcoin, ethereum, solana, ripple, cardano, polkadot, avalanche-2, chainlink, dogecoin, tron) in a single API call, then displays them ranked by market cap.
 
 ---
+
+## Python library (for local testing)
+
+The `src/genlayer_integrations/` package wraps the CoinGecko v3 API for local scripting:
+
+```python
+from genlayer_integrations import CoinGeckoPriceFeed
+
+feed = CoinGeckoPriceFeed()
+btc = feed.get_price("bitcoin", "usd")
+```
+
+---
+
+## Project layout
+
+```
+genlayer-price-oracle/
+鈹溾攢鈹€ src/genlayer_integrations/
+鈹?  鈹溾攢鈹€ __init__.py
+鈹?  鈹溾攢鈹€ base.py
+鈹?  鈹溾攢鈹€ coingecko.py
+鈹?  鈹斺攢鈹€ exceptions.py
+鈹溾攢鈹€ examples/
+鈹?  鈹溾攢鈹€ price_feed_contract.py
+鈹?  鈹斺攢鈹€ market_overview_contract.py
+鈹溾攢鈹€ tests/
+鈹?  鈹斺攢鈹€ test_coingecko.py
+鈹溾攢鈹€ setup.py
+鈹斺攢鈹€ README.md
+```
+
+---
+
+## Notes
+
+- Studionet supports `gl.nondet.web.get()` for external HTTP requests. Asimov and Bradbury currently forbid it.
+- `genlayer deploy --contract <file>`, not a positional arg.
+- `--args bitcoin usd` passes two strings. For single numbers: `--args 100`.
+- The `strict_eq` wrapper ensures all validators agree on the non-deterministic API result.
