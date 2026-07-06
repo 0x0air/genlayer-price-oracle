@@ -33,6 +33,8 @@ genlayer write <CONTRACT> fetch_price --args solana usd
 genlayer call <CONTRACT> show_price
 # -> solana: 81 usd
 ```
+<img width="2506" height="1514" alt="5f0107a5-46d6-427f-a38b-19cec6584131" src="https://github.com/user-attachments/assets/24026b50-ebff-4845-ad94-55bb982fc112" />
+
 
 ### Coin IDs
 
