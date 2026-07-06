@@ -34,6 +34,9 @@ genlayer call <CONTRACT> show_price
 # -> solana: 81 usd
 ```
 
+<img width="2506" height="1514" alt="price feed" src="https://github.com/user-attachments/assets/24026b50-ebff-4845-ad94-55bb982fc112" />
+
+
 ### Coin/API ID
 
 Use any CoinGecko coin slug. The slug is the last part of the coin page URL:
@@ -48,6 +51,9 @@ Check the API directly to confirm:
 ```
 https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd
 ```
+
+<img width="2520" height="1386" alt="coin id" src="https://github.com/user-attachments/assets/40625132-e284-4700-ac22-adcee9b37947" />
+
 
 ---
 
