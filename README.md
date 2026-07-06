@@ -120,18 +120,18 @@ btc = feed.get_price("bitcoin", "usd")
 
 ```
 genlayer-price-oracle/
-鈹溾攢鈹€ src/genlayer_integrations/
-鈹?  鈹溾攢鈹€ __init__.py
-鈹?  鈹溾攢鈹€ base.py
-鈹?  鈹溾攢鈹€ coingecko.py
-鈹?  鈹斺攢鈹€ exceptions.py
-鈹溾攢鈹€ examples/
-鈹?  鈹溾攢鈹€ price_feed_contract.py
-鈹?  鈹斺攢鈹€ market_overview_contract.py
-鈹溾攢鈹€ tests/
-鈹?  鈹斺攢鈹€ test_coingecko.py
-鈹溾攢鈹€ setup.py
-鈹斺攢鈹€ README.md
+|-- src/genlayer_integrations/
+|   |-- __init__.py
+|   |-- base.py
+|   |-- coingecko.py
+|   |-- exceptions.py
+|-- examples/
+|   |-- price_feed_contract.py
+|   |-- market_overview_contract.py
+|-- tests/
+|   |-- test_coingecko.py
+|-- setup.py
+|-- README.md
 ```
 
 ---
@@ -141,4 +141,6 @@ genlayer-price-oracle/
 - Studionet supports `gl.nondet.web.get()` for external HTTP requests. Asimov and Bradbury currently forbid it.
 - `genlayer deploy --contract <file>`, not a positional arg.
 - `--args bitcoin usd` passes two strings. For single numbers: `--args 100`.
-- The `strict_eq` wrapper ensures all validators agree on the non-deterministic API result.
+- The `strict_eq` wrapper ensures all validators agree on the non-deterministic API result.## License
+
+MIT
