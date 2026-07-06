@@ -1,4 +1,4 @@
-﻿# GenLayer Price Oracle -- CoinGecko
+# GenLayer Price Oracle -- CoinGecko
 
 Intelligent Contracts that fetch live crypto prices from CoinGecko on GenLayer. No external oracles, just `gl.nondet.web.get()` calling the public CoinGecko API with `strict_eq` for validator consensus.
 
