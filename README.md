@@ -89,11 +89,30 @@ def fetch_price(self, coin_id: str = "bitcoin", vs_currency: str = "usd") -> str
     # ... parse & store ...
 ```
 
-### `market_overview_contract.py`
+### market_overview_contract.py
 
-Global market snapshot (total market cap, volume, BTC dominance, active coins).
+Fetches top coins by market cap and computes a market snapshot in one call. Returns total market cap, 24h volume, and individual coin prices sorted by market cap (largest first).
 
----
+`ash
+# Deploy
+genlayer deploy --contract examples/market_overview_contract.py
+
+# Fetch market data
+genlayer write <CONTRACT> fetch_market_overview
+
+# Read the snapshot
+genlayer call <CONTRACT> get_summary
+# -> MCap: $2228977441979 | Vol: $59506246744 | bitcoin: $61685 | ethereum: $1736 | solana: $79 | ...
+`
+
+| Method | What it does |
+|--------|-------------|
+| get_summary() | Returns the last market snapshot string |
+| etch_market_overview() | Fetches top 10 coins from CoinGecko with prices, market caps and volumes, then stores a sorted summary |
+
+The contract queries 10 major coins (itcoin, ethereum, solana, ipple, cardano, polkadot, valanche-2, chainlink, dogecoin, 	ron) in a single API call with include_market_cap=true and include_24hr_vol=true, then displays them ranked by market cap.
+
+------
 
 ## Python library (for local testing)
 
