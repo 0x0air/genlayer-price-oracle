@@ -17,7 +17,7 @@ class MarketOverviewContract(gl.Contract):
     @gl.public.write
     def fetch_market_overview(self) -> str:
         def fetch_market_data() -> str:
-            ids = "bitcoin,ethereum,solana,ripple,cardano,polkadot,avalanche-2,chainlink"
+            ids = "bitcoin,ethereum,solana,ripple,cardano,polkadot,avalanche-2,chainlink,dogecoin,tron"
             url = "https://api.coingecko.com/api/v3/simple/price?ids=" + ids + "&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true"
             r = gl.nondet.web.get(url)
             return r.body.decode("utf-8")
@@ -32,19 +32,23 @@ class MarketOverviewContract(gl.Contract):
                 self.summary = "API error (" + str(code) + "): " + msg
                 return self.summary
 
-            coins = []
+            entries = []
             total_mcap = 0
             total_vol = 0
-            for coin_id in d:
-                info = d[coin_id]
+            for coin_id, info in d.items():
                 price = info.get("usd", 0)
                 mcap = info.get("usd_market_cap", 0)
                 vol = info.get("usd_24h_vol", 0)
                 total_mcap += mcap
                 total_vol += vol
-                coins.append(coin_id + ": $" + str(price))
+                entries.append([mcap, coin_id, price])
 
-            self.summary = "MCap: $" + str(round(total_mcap)) + " | Vol: $" + str(round(total_vol)) + " | " + " | ".join(coins)
+            entries.sort(reverse=True)
+
+            parts = ["MCap: $" + str(round(total_mcap)), "Vol: $" + str(round(total_vol))]
+            for e in entries:
+                parts.append(e[1] + ": $" + str(e[2]))
+            self.summary = " | ".join(parts)
             return self.summary
         except Exception as e:
             self.summary = "Error: " + str(e)
