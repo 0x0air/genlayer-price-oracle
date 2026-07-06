@@ -70,8 +70,8 @@ The contract retries up to 5 times on each `write` to handle API hiccups. Possib
 
 Simple single-price feed. Two methods:
 
-- `show_price()` 鈫?returns the last stored price string
-- `fetch_price(coin_id, vs_currency)` 鈫?fetches from CoinGecko and stores it
+- `show_price()` -> returns the last stored price string
+- `fetch_price(coin_id, vs_currency)` -> fetches from CoinGecko and stores it
 
 ```python
 @gl.public.write
