@@ -143,4 +143,6 @@ genlayer-price-oracle/
 - `--args bitcoin usd` passes two strings. For single numbers: `--args 100`.
 - The `strict_eq` wrapper ensures all validators agree on the non-deterministic API result.## License
 
+MIT License. See the [LICENSE](LICENSE) file for details.
+
 MIT
