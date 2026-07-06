@@ -16,9 +16,14 @@ class MarketOverviewContract(gl.Contract):
 
     @gl.public.write
     def fetch_market_overview(self) -> str:
+        def fetch_market_data() -> str:
+            ids = "bitcoin,ethereum,solana,ripple,cardano,polkadot,avalanche-2,chainlink"
+            url = "https://api.coingecko.com/api/v3/simple/price?ids=" + ids + "&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true"
+            r = gl.nondet.web.get(url)
+            return r.body.decode("utf-8")
+
         try:
-            r = gl.nondet.web.get("https://api.coingecko.com/api/v3/global")
-            raw = r.body.decode("utf-8")
+            raw = gl.eq_principle.strict_eq(fetch_market_data)
             d = json.loads(raw)
 
             if "status" in d and "error_code" in d["status"]:
@@ -27,16 +32,19 @@ class MarketOverviewContract(gl.Contract):
                 self.summary = "API error (" + str(code) + "): " + msg
                 return self.summary
 
-            if "data" not in d:
-                self.summary = "No market data returned"
-                return self.summary
+            coins = []
+            total_mcap = 0
+            total_vol = 0
+            for coin_id in d:
+                info = d[coin_id]
+                price = info.get("usd", 0)
+                mcap = info.get("usd_market_cap", 0)
+                vol = info.get("usd_24h_vol", 0)
+                total_mcap += mcap
+                total_vol += vol
+                coins.append(coin_id + ": $" + str(price))
 
-            data = d["data"]
-            mcap = str(data["total_market_cap"]["usd"])
-            volume = str(data["total_volume"]["usd"])
-            btc_dom = str(data["market_cap_percentage"]["btc"])
-            coins = str(data["active_cryptocurrencies"])
-            self.summary = "MCap: " + mcap + " | Vol: " + volume + " | BTC: " + btc_dom + "% | Coins: " + coins
+            self.summary = "MCap: $" + str(round(total_mcap)) + " | Vol: $" + str(round(total_vol)) + " | " + " | ".join(coins)
             return self.summary
         except Exception as e:
             self.summary = "Error: " + str(e)
