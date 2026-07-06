@@ -105,6 +105,8 @@ genlayer call <CONTRACT> get_summary
 | `get_summary()` | Returns the last market snapshot string |
 | `fetch_market_overview()` | Fetches top 10 coins with prices, market caps, volumes, then stores sorted summary |
 
+<img width="2503" height="1435" alt="cba5ae48-196e-48b1-86f0-cd6befdcd5cd" src="https://github.com/user-attachments/assets/b11a0d6a-ba14-43a1-8a93-7c552f37ee67" />
+
 The contract queries 10 major coins (bitcoin, ethereum, solana, ripple, cardano, polkadot, avalanche-2, chainlink, dogecoin, tron) in a single API call, then displays them ranked by market cap.
 
 ---
