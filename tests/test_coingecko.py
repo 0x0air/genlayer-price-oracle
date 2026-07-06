@@ -33,6 +33,7 @@ class TestCoinGeckoClient(unittest.TestCase):
         self.assertEqual(self.client._timeout, 15)
 
     def test_init_with_api_key(self):
+        from genlayer_integrations import CoinGeckoClient
         """Test initialization with API key."""
         client = CoinGeckoClient(api_key="test_key", timeout=30)
         self.assertEqual(client._api_key, "test_key")
